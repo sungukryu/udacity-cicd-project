@@ -29,6 +29,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           cache: "npm"
+          cache-dependency-path: "**/package-lock.json"
       # Install dependencies
       - run: npm ci
       # Run the npm run lint command
