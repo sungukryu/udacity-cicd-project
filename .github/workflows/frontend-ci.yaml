@@ -10,7 +10,7 @@ on:
     branches:
       - main
     paths:
-      - "frontend/**"
+      - "starter/frontend/**"
   workflow_dispatch:
 
 env:
@@ -22,6 +22,10 @@ jobs:
     # Runs a linting job that fails if the code doesn't adhere to eslint rules
     name: Lint Job
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./starter/frontend
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -43,15 +47,18 @@ jobs:
 
       - name: Install Dependencies
         if: steps.cache.outputs['cache-hit'] != 'true'
-        run: cd starter/frontend && npm ci
+        run: npm ci
 
       - name: Run Lint
-        run: cd starter/frontend && npm run lint
+        run: npm run lint
 
   test:
     # Runs a test job that fails if the test suite doesn't pass
     name: Test Job
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./starter/frontend
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -73,17 +80,20 @@ jobs:
 
       - name: Install Dependencies
         if: steps.cache.outputs['cache-hit'] != 'true'
-        run: cd starter/frontend && npm ci
+        run: npm ci
 
       - name: Run Test
-        run: cd starter/frontend && npm run test
+        run: npm run test
 
   # The two jobs above should run in parallel
 
   #  There should be a step that builds the application using docker.
   build:
-    name: Built Job
+    name: Build Job
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./starter/frontend
     needs: [lint, test]
 
     # The job should have these steps:
@@ -108,10 +118,10 @@ jobs:
 
       - name: Install Dependencies
         if: steps.cache.outputs['cache-hit'] != 'true'
-        run: cd starter/frontend && npm ci
+        run: npm ci
 
       - name: Build Application
-        run: cd starter/frontend && npm run test
+        run: npm run test
 # The pipeline should be executed automatically on pull_request
 # The pipeline should be able to be run manually
 # The pipeline should be running without errors with all tests passing and no output failures from any of the steps
