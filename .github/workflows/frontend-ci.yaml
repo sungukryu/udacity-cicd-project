@@ -40,8 +40,9 @@ jobs:
         uses: actions/cache/restore@v3
         id: cache
         with:
-          # path: path/to/dependencies
+          path: starter/frontend/node_modules
           key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+          # path: path/to/dependencies
 
       - name: Install Dependencies
         if: steps.cache.outputs['cache-hit'] != 'true'
