@@ -16,7 +16,6 @@
 
 name: Backend Continuous Integration
 on:
-  #   Runs on pull_requests against the main branch,only when code in the frontend application changes.
   pull_request:
     branches:
       - main
@@ -27,10 +26,8 @@ on:
 env:
   NODE_VERSION: "18.14"
 
-# Runs the following jobs in parallel:
 jobs:
   lint:
-    # Runs a linting job that fails if the code doesn't adhere to eslint rules
     name: Lint Job
     runs-on: ubuntu-latest
     defaults:
@@ -64,7 +61,6 @@ jobs:
         run: npm run lint
 
   test:
-    # Runs a test job that fails if the test suite doesn't pass
     name: Test Job
     runs-on: ubuntu-latest
     defaults:
@@ -95,8 +91,6 @@ jobs:
 
       - name: Run Test
         run: npm run test
-
-  # The two jobs above should run in parallel
 
   #  There should be a step that builds the application using docker.
   build:

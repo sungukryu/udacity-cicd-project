@@ -1,7 +1,5 @@
 name: Frontend Continuous Integration
 on:
-  #   Runs on pull_requests against the main branch,
-  #   only when code in the frontend application changes.
   pull_request:
     branches:
       - main
@@ -12,7 +10,6 @@ on:
 env:
   NODE_VERSION: "18.14"
 
-# Runs the following jobs in parallel:
 jobs:
   lint:
     # Runs a linting job that fails if the code doesn't adhere to eslint rules
@@ -39,7 +36,6 @@ jobs:
         with:
           path: starter/frontend/node_modules
           key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
-          # path: path/to/dependencies
 
       - name: Install Dependencies
         if: steps.cache.outputs['cache-hit'] != 'true'
@@ -49,7 +45,6 @@ jobs:
         run: npm run lint
 
   test:
-    # Runs a test job that fails if the test suite doesn't pass
     name: Test Job
     runs-on: ubuntu-latest
     defaults:
@@ -72,7 +67,6 @@ jobs:
         with:
           path: starter/frontend/node_modules
           key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
-          # path: path/to/dependencies
 
       - name: Install Dependencies
         if: steps.cache.outputs['cache-hit'] != 'true'
@@ -81,9 +75,6 @@ jobs:
       - name: Run Test
         run: npm run test
 
-  # The two jobs above should run in parallel
-
-  #  There should be a step that builds the application using docker.
   build:
     name: Build Job
     runs-on: ubuntu-latest
@@ -110,14 +101,10 @@ jobs:
         with:
           path: starter/frontend/node_modules
           key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
-          # path: path/to/dependencies
 
       - name: Install Dependencies
         if: steps.cache.outputs['cache-hit'] != 'true'
         run: npm ci
 
       - name: Build Application
-        run: npm run test
-# The pipeline should be executed automatically on pull_request
-# The pipeline should be able to be run manually
-# The pipeline should be running without errors with all tests passing and no output failures from any of the steps
+        run: docker build --build-arg=REACT_APP_MOVIE_API_URL=http://localhost:5000 --tag=mp-frontend:latest . && docker run --name mp-frontend -p 3000:3000 -d mp-frontend]
