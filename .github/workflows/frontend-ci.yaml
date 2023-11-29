@@ -36,18 +36,19 @@ jobs:
           # cache: "npm"
           # cache-dependency-path: "**/package-lock.json"
 
-      # Perform a cache action to restore cache before dependency install
-      - uses: actions/cache/restore@v3
+      - name: Restore Cache
+        uses: actions/cache/restore@v3
         id: cache
         with:
-          path: path/to/dependencies
+          # path: path/to/dependencies
           key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
 
       - name: Install Dependencies
         if: steps.cache.outputs['cache-hit'] != 'true'
-        run: npm ci package-lock.json
+        run: cd starter/frontend && npm ci
       # Run the npm run lint command
-      - run: npm run lint
+      - name: Run Lint
+        run: cd starter/frontend && npm run lint
 
   # TEST JOB: There should be a job in the workflow that runs the tests The job should have these steps:
   test:
