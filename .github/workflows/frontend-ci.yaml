@@ -1,11 +1,7 @@
-#     Is triggered on pull_requests events against the main branch,
-#     Only when code in the frontend application changes
-#     Runs the following tasks in parallel:
-# There should be a file called .github/workflows/frontend-ci.yaml in the root of the project.
-
-name: CI Pipeline for the Frontend Application
+name: Frontend Continuous Integration
 on:
-  #   Runs on pull_requests against the main branch,only when code in the frontend application changes.
+  #   Runs on pull_requests against the main branch,
+  #   only when code in the frontend application changes.
   pull_request:
     branches:
       - main

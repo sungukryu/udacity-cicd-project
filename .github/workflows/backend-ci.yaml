@@ -1,0 +1,138 @@
+# Build a Continuous Integration pipeline for the backend application
+# using Github Actions.
+# The pipeline should be configured to meet the team's needs,
+# fulfilling the requirements of linting, testing,
+# and building of the application on every pull request against the main branch.
+
+# A Continuous Integration workflow that:
+#   Runs on pull_requests against the main branch,
+#   only when code in the frontend application changes.
+#   Is able to be run on-demand (i.e., manually without needing to push code)
+#   Runs the following jobs in parallel:
+#   Runs a linting job that fails if the code doesn't adhere to eslint rules
+#   Runs a test job that fails if the test suite doesn't pass
+#   Runs a build job only if the lint and test jobs pass
+#   and successfully builds the application
+
+name: Backend Continuous Integration
+on:
+  #   Runs on pull_requests against the main branch,only when code in the frontend application changes.
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "starter/frontend/**"
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: "18.14"
+
+# Runs the following jobs in parallel:
+jobs:
+  lint:
+    # Runs a linting job that fails if the code doesn't adhere to eslint rules
+    name: Lint Job
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./starter/frontend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          # cache: "npm"
+          # cache-dependency-path: "**/package-lock.json"
+
+      - name: Restore Cache
+        uses: actions/cache/restore@v3
+        id: cache
+        with:
+          path: starter/frontend/node_modules
+          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+          # path: path/to/dependencies
+
+      - name: Install Dependencies
+        if: steps.cache.outputs['cache-hit'] != 'true'
+        run: npm ci
+
+      - name: Run Lint
+        run: npm run lint
+
+  test:
+    # Runs a test job that fails if the test suite doesn't pass
+    name: Test Job
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./starter/frontend
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          # cache: "npm"
+          # cache-dependency-path: "**/package-lock.json"
+
+      - name: Restore Cache
+        uses: actions/cache/restore@v3
+        id: cache
+        with:
+          path: starter/frontend/node_modules
+          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+          # path: path/to/dependencies
+
+      - name: Install Dependencies
+        if: steps.cache.outputs['cache-hit'] != 'true'
+        run: npm ci
+
+      - name: Run Test
+        run: npm run test
+
+  # The two jobs above should run in parallel
+
+  #  There should be a step that builds the application using docker.
+  build:
+    name: Build Job
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./starter/frontend
+    needs: [lint, test]
+
+    # The job should have these steps:
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          # cache: "npm"
+          # cache-dependency-path: "**/package-lock.json"
+
+      - name: Restore Cache
+        uses: actions/cache/restore@v3
+        id: cache
+        with:
+          path: starter/frontend/node_modules
+          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+          # path: path/to/dependencies
+
+      - name: Install Dependencies
+        if: steps.cache.outputs['cache-hit'] != 'true'
+        run: npm ci
+
+      - name: Build Application
+        run: npm run test
+# The pipeline should be executed automatically on pull_request
+# The pipeline should be able to be run manually
+# The pipeline should be running without errors with all tests passing and no output failures from any of the steps
