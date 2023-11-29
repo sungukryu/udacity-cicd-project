@@ -14,30 +14,45 @@ on:
   # Is able to be run on-demand (i.e. manually without needing to push code)
   workflow_dispatch:
 
+env:
+  NODE_VERSION: "18.14"
+
 # Runs the following jobs in parallel:
 jobs:
   # LINT JOB: There should be a job in the workflow that runs linting.
   lint:
-    name: Runs a linting job that fails if the code doesn't adhere to eslint rules
+    # Runs a linting job that fails if the code doesn't adhere to eslint rules
+    name: Lint Job
     runs-on: ubuntu-latest
     # The job should have these steps:
     steps:
-      # Checkout code
-      - uses: actions/checkout@v4
-      # Setup NodeJS
-      # Perform a cache action to restore cache before dependency install
-      - uses: actions/setup-node@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@v3
         with:
-          cache: "npm"
-          cache-dependency-path: "**/package-lock.json"
-      # Install dependencies
-      - run: npm ci
+          node-version: ${{ env.NODE_VERSION }}
+          # cache: "npm"
+          # cache-dependency-path: "**/package-lock.json"
+
+      # Perform a cache action to restore cache before dependency install
+      - uses: actions/cache/restore@v3
+        id: cache
+        with:
+          path: path/to/dependencies
+          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+
+      - name: Install Dependencies
+        if: steps.cache.outputs['cache-hit'] != 'true'
+        run: npm ci package-lock.json
       # Run the npm run lint command
       - run: npm run lint
 
   # TEST JOB: There should be a job in the workflow that runs the tests The job should have these steps:
   test:
-    name: Runs a test job that fails if the test suite doesn't pass
+    # Runs a test job that fails if the test suite doesn't pass
+    name: Test Job
     runs-on: ubuntu-latest
     steps:
       # Checkout code
@@ -55,7 +70,8 @@ jobs:
 
   # BUILD JOB: This job should only run after the first 2 succeed (student has to use the "needs" syntax) There should be a step that builds the application using docker. The job should have these steps:
   build:
-    name: Runs a build job only if the lint and test jobs pass and successfully builds the application
+    # Runs a build job only if the lint and test jobs pass and successfully builds the application
+    name: Built Job
     runs-on: ubuntu-latest
     steps:
       # Checkout code
