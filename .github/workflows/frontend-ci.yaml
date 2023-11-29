@@ -1,0 +1,71 @@
+#     Is triggered on pull_requests events against the main branch,
+#     Only when code in the frontend application changes
+#     Runs the following tasks in parallel:
+# There should be a file called .github/workflows/frontend-ci.yaml in the root of the project.
+
+name: CI Pipeline for the Frontend Application
+on:
+  #   Runs on pull_requests against the main branch,only when code in the frontend application changes.
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "frontend/**"
+  # Is able to be run on-demand (i.e. manually without needing to push code)
+  workflow_dispatch:
+
+# Runs the following jobs in parallel:
+jobs:
+  # LINT JOB: There should be a job in the workflow that runs linting.
+  lint:
+    name: Runs a linting job that fails if the code doesn't adhere to eslint rules
+    runs-on: ubuntu-latest
+    # The job should have these steps:
+    steps:
+      # Checkout code
+      - uses: actions/checkout@v4
+      # Setup NodeJS
+      # Perform a cache action to restore cache before dependency install
+      - uses: actions/setup-node@v3
+        with:
+          cache: "npm"
+      # Install dependencies
+      - run: npm ci
+      # Run the npm run lint command
+      - run: npm run lint
+
+  # TEST JOB: There should be a job in the workflow that runs the tests The job should have these steps:
+  test:
+    name: Runs a test job that fails if the test suite doesn't pass
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout code
+      - uses: actions/checkout@v4
+      # Setup NodeJS
+      # Perform a cache action to restore cache before dependency install
+      - uses: actions/setup-node@v3
+        with:
+          cache: "npm"
+      # Install dependencies
+      - run: npm ci
+      # Run the npm run test command
+      - run: npm run test
+    # The two jobs above should run in parallel
+
+  # BUILD JOB: This job should only run after the first 2 succeed (student has to use the "needs" syntax) There should be a step that builds the application using docker. The job should have these steps:
+  build:
+    name: Runs a build job only if the lint and test jobs pass and successfully builds the application
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout code
+      - uses: actions/checkout@v4
+      # Setup NodeJS
+      # Perform a cache action to restore cache before dependency install
+      - uses: actions/setup-node@v3
+        with:
+          cache: "npm"
+      # Install dependencies
+      - run: npm ci
+      # Run the npm run test command
+      - run: npm run test
+# The pipeline should be executed automatically on pull_request The pipeline should be able to be run manually The pipeline should be running without errors with all tests passing and no output failures from any of the steps

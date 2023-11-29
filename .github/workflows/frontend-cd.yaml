@@ -1,0 +1,12 @@
+# A Continuous Deployment workflow file that:
+#     Is triggered on push events against the main branch,
+#     Only when code in the frontend application changes
+#     Can be run on-demand (i.e. manually without needing to push code)
+#     Accomplishes the following tasks:
+#     Test
+#     Build
+#     Run after tests succeed
+#     Tag the built docker image with the git sha (use GitHub Context)
+#     If deploying to a Kubernetes cluster:
+#     Push the image to ECR
+#     Apply the Kubernetes manfiests using the image tag from build
