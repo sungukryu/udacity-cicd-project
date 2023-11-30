@@ -42,8 +42,8 @@ jobs:
         run: npm ci
 
       - name: Run Lint
-        # run: npm run lint
-        run: FAIL_LINT=true npm run lint
+        run: npm run lint
+        # run: FAIL_LINT=true npm run lint
 
   test:
     name: Test Job
@@ -70,6 +70,7 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
 
       - name: Install Dependencies
+        if: steps.cache.outputs['cache-hit'] != 'true'
         run: npm ci
 
       - name: Run Test
