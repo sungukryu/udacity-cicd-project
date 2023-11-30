@@ -42,7 +42,8 @@ jobs:
         run: npm ci
 
       - name: Run Lint
-        run: npm run lint
+        # run: npm run lint
+        run: FAIL_LINT=true npm run lint
 
   test:
     name: Test Job
@@ -107,4 +108,4 @@ jobs:
         run: npm ci
 
       - name: Build Application
-        run: docker build --build-arg=REACT_APP_MOVIE_API_URL=http://localhost:5000 --tag=mp-frontend:latest . && docker run --name mp-frontend -p 3000:3000 -d mp-frontend]
+        run: docker build --build-arg=REACT_APP_MOVIE_API_URL=http://localhost:5000 --tag=mp-frontend:latest . # && docker run --name mp-frontend -p 3000:3000 -d mp-frontend]
