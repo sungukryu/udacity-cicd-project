@@ -1,12 +1,10 @@
-# Build a Continuous Integration pipeline for the backend application
-# using Github Actions.
 # The pipeline should be configured to meet the team's needs,
 # fulfilling the requirements of linting, testing,
 # and building of the application on every pull request against the main branch.
 
 # A Continuous Integration workflow that:
 #   Runs on pull_requests against the main branch,
-#   only when code in the frontend application changes.
+#   only when code in the backend application changes.
 #   Is able to be run on-demand (i.e., manually without needing to push code)
 #   Runs the following jobs in parallel:
 #   Runs a linting job that fails if the code doesn't adhere to eslint rules
@@ -20,7 +18,7 @@ on:
     branches:
       - main
     paths:
-      - "starter/frontend/**"
+      - "starter/backend/**"
   workflow_dispatch:
 
 env:
@@ -32,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./starter/frontend
+        working-directory: ./starter/backend
 
     steps:
       - name: Checkout code
@@ -49,7 +47,7 @@ jobs:
         uses: actions/cache/restore@v3
         id: cache
         with:
-          path: starter/frontend/node_modules
+          path: starter/backend/node_modules
           key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
           # path: path/to/dependencies
 
@@ -58,14 +56,15 @@ jobs:
         run: npm ci
 
       - name: Run Lint
-        run: npm run lint
+        # run: npm run lint
+        run: FAIL_LINT=true npm run lint
 
   test:
     name: Test Job
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./starter/frontend
+        working-directory: ./starter/backend
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -81,7 +80,7 @@ jobs:
         uses: actions/cache/restore@v3
         id: cache
         with:
-          path: starter/frontend/node_modules
+          path: starter/backend/node_modules
           key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
           # path: path/to/dependencies
 
@@ -98,7 +97,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./starter/frontend
+        working-directory: ./starter/backend
     needs: [lint, test]
 
     # The job should have these steps:
@@ -117,7 +116,7 @@ jobs:
         uses: actions/cache/restore@v3
         id: cache
         with:
-          path: starter/frontend/node_modules
+          path: starter/backend/node_modules
           key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
           # path: path/to/dependencies
 
