@@ -5,10 +5,6 @@
 #     Push the image to ECR
 #     Apply the Kubernetes manfiests using the image tag from build
 
-# The pipeline should be configured to meet the team's needs,
-# fulfilling the requirements of linting, testing, building
-# and deploying of the application on every merge to the main branch.
-
 # This step should also utilize build-args to ensure the application is built
 # with an environment variable REACT_APP_MOVIE_API_URL
 # There should be a step that utilizes aws-actions/amazon-ecr-login action
@@ -45,133 +41,137 @@ env:
 
 jobs:
   lint:
-    # Runs a linting job that fails if the code doesn't adhere to eslint rules
     name: Lint Job
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./starter/frontend
+        working-directory: "starter/frontend"
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup NodeJS
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
-          cache-dependency-path: "**/package-lock.json"
+          # cache: "npm"
+          # cache-dependency-path: "**/package-lock.json"
 
       - name: Restore Cache
-        uses: actions/cache/restore@v3
+        uses: actions/cache@v3
         id: cache
         with:
-          path: starter/frontend/node_modules
-          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+          path: "**/node_modules"
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       - name: Install Dependencies
-        if: steps.cache.outputs['cache-hit'] != 'true'
+        if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci
 
       - name: Run Lint
         run: npm run lint
-        # run: FAIL_LINT=true npm run lint
 
   test:
     name: Test Job
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./starter/frontend
+        working-directory: "starter/frontend"
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup NodeJS
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           # cache: "npm"
           # cache-dependency-path: "**/package-lock.json"
 
       - name: Restore Cache
-        uses: actions/cache/restore@v3
+        uses: actions/cache@v3
         id: cache
         with:
-          path: starter/frontend/node_modules
-          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+          path: "**/node_modules"
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       - name: Install Dependencies
-        if: steps.cache.outputs['cache-hit'] != 'true'
+        if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci
 
       - name: Run Test
         run: npm run test
 
-  deploy:
-    name: Deploy Job
+  build:
+    name: Build Job
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./starter/frontend
+        working-directory: "starter/frontend"
     needs: [lint, test]
 
-    # The job should have these steps:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup NodeJS
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           # cache: "npm"
           # cache-dependency-path: "**/package-lock.json"
 
       - name: Restore Cache
-        uses: actions/cache/restore@v3
+        uses: actions/cache@v3
         id: cache
         with:
-          path: starter/frontend/node_modules
-          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+          path: "**/node_modules"
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       - name: Install Dependencies
-        if: steps.cache.outputs['cache-hit'] != 'true'
+        if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci
 
       - name: Build Application
         run: docker build --build-arg=REACT_APP_MOVIE_API_URL=http://localhost:5000 --tag=mp-frontend:latest . # && docker run --name mp-frontend -p 3000:3000 -d mp-frontend]
-        build:
-          name: Build Job
-          runs-on: ubuntu-latest
-          defaults:
-            run:
-              working-directory: ./starter/frontend
-          needs: [lint, test]
 
-          # The job should have these steps:
-          steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
+  deploy:
+    name: Deploy Job
+    needs: [build]
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: "starter/frontend"
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-            - name: Setup NodeJS
-              uses: actions/setup-node@v3
-              with:
-                node-version: ${{ env.NODE_VERSION }}
-                # cache: "npm"
-                # cache-dependency-path: "**/package-lock.json"
+      - name: Setup NodeJS
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          # cache: "npm"
+          # cache-dependency-path: "**/package-lock.json"
 
-            - name: Restore Cache
-              uses: actions/cache/restore@v3
-              id: cache
-              with:
-                path: starter/frontend/node_modules
-                key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+      - name: Restore Cache
+        uses: actions/cache@v3
+        id: cache
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
-            - name: Install Dependencies
-              if: steps.cache.outputs['cache-hit'] != 'true'
-              run: npm ci
+      - name: Install Dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm ci
 
-            - name: Build Application
-              run: docker build --build-arg=REACT_APP_MOVIE_API_URL=http://localhost:5000 --tag=mp-frontend:latest . # && docker run --name mp-frontend -p 3000:3000 -d mp-frontend]
+      - name: Run Test
+        run: npm run test
