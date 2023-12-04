@@ -12,32 +12,25 @@ env:
 
 jobs:
   lint:
+    # Runs a linting job that fails if the code doesn't adhere to eslint rules
     name: Lint Job
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./starter/frontend
+        working-directory: "starter/frontend"
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup NodeJS
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          # cache: "npm"
-          # cache-dependency-path: "**/package-lock.json"
-
-      - name: Restore Cache
-        uses: actions/cache/restore@v3
-        id: cache
-        with:
-          path: starter/frontend/node_modules
-          key: ${{ hashFiles('**/lockfiles') }}
+          cache: "npm"
+          cache-dependency-path: "package-lock.json"
 
       - name: Install Dependencies
-        if: steps.cache.outputs['cache-hit'] != 'true'
         run: npm ci
 
       - name: Run Lint
@@ -49,27 +42,19 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./starter/frontend
+        working-directory: "starter/frontend"
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup NodeJS
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          # cache: "npm"
-          # cache-dependency-path: "**/package-lock.json"
-
-      - name: Restore Cache
-        uses: actions/cache/restore@v3
-        id: cache
-        with:
-          path: starter/frontend/node_modules
-          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+          cache: "npm"
+          cache-dependency-path: "package-lock.json"
 
       - name: Install Dependencies
-        if: steps.cache.outputs['cache-hit'] != 'true'
         run: npm ci
 
       - name: Run Test
@@ -80,7 +65,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./starter/frontend
+        working-directory: "starter/frontend"
     needs: [lint, test]
 
     # The job should have these steps:
@@ -89,21 +74,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup NodeJS
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          # cache: "npm"
-          # cache-dependency-path: "**/package-lock.json"
-
-      - name: Restore Cache
-        uses: actions/cache/restore@v3
-        id: cache
-        with:
-          path: starter/frontend/node_modules
-          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+          cache: "npm"
+          cache-dependency-path: "package-lock.json"
 
       - name: Install Dependencies
-        if: steps.cache.outputs['cache-hit'] != 'true'
         run: npm ci
 
       - name: Build Application
