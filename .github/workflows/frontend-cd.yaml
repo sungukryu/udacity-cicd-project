@@ -25,6 +25,9 @@ on:
 
 env:
   NODE_VERSION: "18.14"
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_SESSION_TOKEN: ${{secrets.AWS_SESSION_TOKEN}}
 
 jobs:
   lint:
@@ -139,10 +142,9 @@ jobs:
         with:
           # role-to-assume: arn:aws:iam::432255178055:role/my-github-actions-role
           aws-region: us-east-1
-        env:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ env.AWS_SESSION_TOKEN }}
 
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
