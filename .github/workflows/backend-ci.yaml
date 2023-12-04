@@ -32,7 +32,7 @@ jobs:
         uses: actions/cache/restore@v3
         id: cache
         with:
-          path: starter/backend/node_modules
+          path: starter/backend
           key: ${{ runner.os }}-${{ hashFiles('**/Pipfile.lock') }}
 
       - name: Install Dependencies
@@ -62,7 +62,7 @@ jobs:
         uses: actions/cache/restore@v3
         id: cache
         with:
-          path: starter/backend/node_modules
+          path: starter/backend
           key: ${{ runner.os }}-${{ hashFiles('**/Pipfile.lock') }}
 
       - name: Install Dependencies
@@ -94,7 +94,7 @@ jobs:
         uses: actions/cache/restore@v3
         id: cache
         with:
-          path: starter/backend/node_modules
+          path: starter/backend
           key: ${{ runner.os }}-${{ hashFiles('**/Pipfile.lock') }}
 
       - name: Install Dependencies
