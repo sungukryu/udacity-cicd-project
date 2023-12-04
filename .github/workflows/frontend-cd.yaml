@@ -3,7 +3,6 @@
 # There should be a step that utilizes aws-actions/amazon-ecr-login action
 # for logging into ECR. (using 3rd party actions)
 # The ECR login step should also be accessing Github Secrets for credentials.
-# (secure approach)
 # There should be a step that pushes the docker image to ECR in the AWS account.
 # There should be a step that deploys the application using kubectl to the eks cluster
 # The pipeline should be running without errors with all tests passing
@@ -12,7 +11,6 @@
 # If there are AWS credentials anywhere in any of the pipelines = FAIL
 # If any of the pipelines are failing to run or have failed steps = FAIL
 # If any of the pipelines pass when there's a test failure = FAIL
-# (will provide steps on how to simulate test failure)
 # If the docker image doesn't get uploaded to ECR = FAIL
 # If the application isn't successfully running on the cluster = FAIL
 
@@ -141,6 +139,9 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::432255178055:role/my-github-actions-role
           aws-region: us-east-1
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
 
       - name: Setup NodeJS
         uses: actions/setup-node@v4
