@@ -12,7 +12,6 @@ env:
 
 jobs:
   lint:
-    # Runs a linting job that fails if the code doesn't adhere to eslint rules
     name: Lint Job
     runs-on: ubuntu-latest
     defaults:
@@ -35,7 +34,7 @@ jobs:
         id: cache
         with:
           path: starter/frontend/node_modules
-          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+          key: ${{ hashFiles('**/lockfiles') }}
 
       - name: Install Dependencies
         if: steps.cache.outputs['cache-hit'] != 'true'

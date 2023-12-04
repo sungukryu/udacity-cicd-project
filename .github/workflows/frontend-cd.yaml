@@ -1,12 +1,181 @@
-# A Continuous Deployment workflow file that:
-#     Is triggered on push events against the main branch,
-#     Only when code in the frontend application changes
-#     Can be run on-demand (i.e. manually without needing to push code)
 #     Accomplishes the following tasks:
-#     Test
-#     Build
 #     Run after tests succeed
 #     Tag the built docker image with the git sha (use GitHub Context)
 #     If deploying to a Kubernetes cluster:
 #     Push the image to ECR
 #     Apply the Kubernetes manfiests using the image tag from build
+
+# The pipeline should be configured to meet the team's needs,
+# fulfilling the requirements of linting, testing, building
+# and deploying of the application on every merge to the main branch.
+
+# There should be a step in the workflow that runs linting and passes
+# There should be a step in the workflow that runs the tests and passes
+# There should be a step that builds the application using docker
+# only after linting and testing complete (use the needs directive)
+# This step should also utilize build-args to ensure the application is built
+# with an environment variable REACT_APP_MOVIE_API_URL
+# There should be a step that utilizes aws-actions/amazon-ecr-login action
+# for logging into ECR. (using 3rd party actions)
+# The ECR login step should also be accessing Github Secrets for credentials.
+# (secure approach)
+# There should be a step that pushes the docker image to ECR in the AWS account.
+# There should be a step that deploys the application using kubectl to the eks cluster
+# The pipeline should be executed automatically on merges to the main branch
+# The pipeline should be able to be run manually for verification purposes
+# The pipeline should be running without errors with all tests passing
+# and no output failures from any of the steps
+
+# If there are AWS credentials anywhere in any of the pipelines = FAIL
+# If any of the pipelines are failing to run or have failed steps = FAIL
+# If any of the pipelines pass when there's a test failure = FAIL
+# (will provide steps on how to simulate test failure)
+# If the docker image doesn't get uploaded to ECR = FAIL
+# If the application isn't successfully running on the cluster = FAIL
+# (the frontend should be able to pull the list of movies
+# and verifies the environment variable was passed correctly)
+
+name: Frontend Continuous Deployment
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "starter/frontend/**"
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: "18.14"
+
+jobs:
+  lint:
+    # Runs a linting job that fails if the code doesn't adhere to eslint rules
+    name: Lint Job
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./starter/frontend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+          cache-dependency-path: "**/package-lock.json"
+
+      - name: Restore Cache
+        uses: actions/cache/restore@v3
+        id: cache
+        with:
+          path: starter/frontend/node_modules
+          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+
+      - name: Install Dependencies
+        if: steps.cache.outputs['cache-hit'] != 'true'
+        run: npm ci
+
+      - name: Run Lint
+        run: npm run lint
+        # run: FAIL_LINT=true npm run lint
+
+  test:
+    name: Test Job
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./starter/frontend
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          # cache: "npm"
+          # cache-dependency-path: "**/package-lock.json"
+
+      - name: Restore Cache
+        uses: actions/cache/restore@v3
+        id: cache
+        with:
+          path: starter/frontend/node_modules
+          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+
+      - name: Install Dependencies
+        if: steps.cache.outputs['cache-hit'] != 'true'
+        run: npm ci
+
+      - name: Run Test
+        run: npm run test
+
+  deploy:
+    name: Deploy Job
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./starter/frontend
+    needs: [lint, test]
+
+    # The job should have these steps:
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          # cache: "npm"
+          # cache-dependency-path: "**/package-lock.json"
+
+      - name: Restore Cache
+        uses: actions/cache/restore@v3
+        id: cache
+        with:
+          path: starter/frontend/node_modules
+          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+
+      - name: Install Dependencies
+        if: steps.cache.outputs['cache-hit'] != 'true'
+        run: npm ci
+
+      - name: Build Application
+        run: docker build --build-arg=REACT_APP_MOVIE_API_URL=http://localhost:5000 --tag=mp-frontend:latest . # && docker run --name mp-frontend -p 3000:3000 -d mp-frontend]
+        build:
+          name: Build Job
+          runs-on: ubuntu-latest
+          defaults:
+            run:
+              working-directory: ./starter/frontend
+          needs: [lint, test]
+
+          # The job should have these steps:
+          steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Setup NodeJS
+              uses: actions/setup-node@v3
+              with:
+                node-version: ${{ env.NODE_VERSION }}
+                # cache: "npm"
+                # cache-dependency-path: "**/package-lock.json"
+
+            - name: Restore Cache
+              uses: actions/cache/restore@v3
+              id: cache
+              with:
+                path: starter/frontend/node_modules
+                key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+
+            - name: Install Dependencies
+              if: steps.cache.outputs['cache-hit'] != 'true'
+              run: npm ci
+
+            - name: Build Application
+              run: docker build --build-arg=REACT_APP_MOVIE_API_URL=http://localhost:5000 --tag=mp-frontend:latest . # && docker run --name mp-frontend -p 3000:3000 -d mp-frontend]
