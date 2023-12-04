@@ -9,10 +9,6 @@
 # fulfilling the requirements of linting, testing, building
 # and deploying of the application on every merge to the main branch.
 
-# There should be a step in the workflow that runs linting and passes
-# There should be a step in the workflow that runs the tests and passes
-# There should be a step that builds the application using docker
-# only after linting and testing complete (use the needs directive)
 # This step should also utilize build-args to ensure the application is built
 # with an environment variable REACT_APP_MOVIE_API_URL
 # There should be a step that utilizes aws-actions/amazon-ecr-login action

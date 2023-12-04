@@ -1,25 +1,5 @@
-# A Continuous Integration workflow that:
-#   Runs on pull_requests against the main branch,
-#   only when code in the backend application changes.
-#   Is able to be run on-demand (i.e., manually without needing to push code)
-#   Runs the following jobs in parallel:
-#   Runs a linting job that fails if the code doesn't adhere to eslint rules
-#   Runs a test job that fails if the test suite doesn't pass
-#   Runs a build job only if the lint and test jobs pass
-#   and successfully builds the application
-
-# Build a Continuous Integration pipeline for the backend application using Github Actions.
-# The pipeline should be configured to meet the team's needs, fulfilling the requirements of linting,
-# testing, and building of the application on every pull request against the main branch.
-# There should be a file called .github/workflows/backend-ci.yaml in the root of the project
-# There should be a job in the workflow that runs linting.
 # There should be a job in the workflow that runs the tests Linting and testing should be done in parallel.
-# The job and lint should complete before proceeding to the build step
 # There should be a job that builds the application using docker.
-# The pipeline should be executed automatically on pull_request
-# The pipeline should also be able to be run manually
-# The pipeline should be running without errors with all tests passing
-# and no output failures from any of the steps
 
 name: Backend Continuous Integration
 on:
@@ -31,7 +11,7 @@ on:
   workflow_dispatch:
 
 env:
-  PYTHON_VERSION: "3.9"
+  PYTHON_VERSION: "3.10"
 
 jobs:
   lint:
@@ -39,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./starter/backend
+        working-directory: "starter/backend"
 
     steps:
       - name: Checkout code
@@ -56,23 +36,21 @@ jobs:
         id: cache
         with:
           path: starter/backend/node_modules
-          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
-          # path: path/to/dependencies
+          key: ${{ runner.os }}-${{ hashFiles('**/Pipfile.lock') }}
 
       - name: Install Dependencies
         if: steps.cache.outputs['cache-hit'] != 'true'
-        run: pip install pipenv
+        run: pip install pipenv && pipenv install
 
       - name: Run Lint
-        run: npm run lint
-        # run: FAIL_LINT=true npm run lint
+        run: pipenv run lint
 
   test:
     name: Test Job
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./starter/backend
+        working-directory: "starter/backend"
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -88,26 +66,23 @@ jobs:
         id: cache
         with:
           path: starter/backend/node_modules
-          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
-          # path: path/to/dependencies
+          key: ${{ runner.os }}-${{ hashFiles('**/Pipfile.lock') }}
 
       - name: Install Dependencies
         if: steps.cache.outputs['cache-hit'] != 'true'
-        run: pip install pipenv
+        run: pip install pipenv && pipenv install
 
       - name: Run Test
-        run: npm run test
+        run: pipenv run test
 
-  #  There should be a step that builds the application using docker.
   build:
     name: Build Job
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./starter/backend
+        working-directory: "starter/backend"
     needs: [lint, test]
 
-    # The job should have these steps:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -123,15 +98,11 @@ jobs:
         id: cache
         with:
           path: starter/backend/node_modules
-          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
-          # path: path/to/dependencies
+          key: ${{ runner.os }}-${{ hashFiles('**/Pipfile.lock') }}
 
       - name: Install Dependencies
         if: steps.cache.outputs['cache-hit'] != 'true'
-        run: pip install pipenv
+        run: pip install pipenv && pipenv install
 
       - name: Build Application
-        run: npm run test
-# The pipeline should be executed automatically on pull_request
-# The pipeline should be able to be run manually
-# The pipeline should be running without errors with all tests passing and no output failures from any of the steps
+        run: docker build --tag mp-backend:latest . # && docker run -p 5000:5000 --name mp-backend -d mp-backend
