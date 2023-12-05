@@ -140,6 +140,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: us-east-1
+          role-skip-session-tagging: true
 
       # There should be a step that utilizes aws-actions/amazon-ecr-login action
       # for logging into ECR. (using 3rd party actions)
