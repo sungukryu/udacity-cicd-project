@@ -176,16 +176,15 @@ jobs:
       #     Apply the Kubernetes manfiests using the image tag from build
       - name: Run Test
         run: npm run test
-
 # 1b511abead59c6ce207077c0bf0e0043b1382612
 # client = boto3.client('iam')
 
-response = client.create_open_id_connect_provider(
-  ClientIDList=[
-      'sts.amazonaws.com',
-  ],
-  ThumbprintList=[
-      '1b511abead59c6ce207077c0bf0e0043b1382612',
-  ],
-  Url='https://token.actions.githubusercontent.com',
-)
+# response = client.create_open_id_connect_provider(
+#   ClientIDList=[
+#       'sts.amazonaws.com',
+#   ],
+#   ThumbprintList=[
+#       '1b511abead59c6ce207077c0bf0e0043b1382612',
+#   ],
+#   Url='https://token.actions.githubusercontent.com',
+# )
