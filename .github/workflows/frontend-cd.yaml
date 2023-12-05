@@ -134,7 +134,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: "arn:aws:iam::432255178055:role/github-actions"
+          role-to-assume: "arn:aws:sts::432255178055:assumed-role/voclabs/user2898960=3513029049"
           # role-session-name: github-action-user
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
