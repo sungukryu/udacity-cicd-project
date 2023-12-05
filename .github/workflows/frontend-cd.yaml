@@ -136,11 +136,11 @@ jobs:
         with:
           aws-region: us-east-1
           audience: sts.amazonaws.com
-          # role-to-assume: "arn:aws:iam::432255178055:role/github-actions"
-          # role-session-name: github-action-user
+          role-to-assume: "arn:aws:iam::432255178055:role/github-actions"
           # aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           # aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           # aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          # role-session-name: github-action-user
           # role-skip-session-tagging: true
 
       # There should be a step that utilizes aws-actions/amazon-ecr-login action
