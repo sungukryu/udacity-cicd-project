@@ -1,6 +1,5 @@
 # This step should also utilize build-args to ensure the application is built
 # with an environment variable REACT_APP_MOVIE_API_URL
-# The ECR login step should also be accessing Github Secrets for credentials.
 # There should be a step that pushes the docker image to ECR in the AWS account.
 # There should be a step that deploys the application using kubectl to the eks cluster
 # The pipeline should be running without errors with all tests passing
@@ -135,16 +134,9 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: us-east-1
-          # audience: sts.amazonaws.com
-          # role-to-assume: "arn:aws:iam::432255178055:role/github-actions"
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          # aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-          # role-session-name: github-action-user
-          # role-skip-session-tagging: true
 
-      # There should be a step that utilizes aws-actions/amazon-ecr-login action
-      # for logging into ECR. (using 3rd party actions)
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
         id: login-ecr
