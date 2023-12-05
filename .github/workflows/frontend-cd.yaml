@@ -132,15 +132,15 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v3
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::432255178055:role/github-actions
-          role-session-name: github-actions
+          role-to-assume: "arn:aws:iam::432255178055:role/github-actions"
+          # role-session-name: github-action-user
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: us-east-1
-          role-skip-session-tagging: true
+          # role-skip-session-tagging: true
 
       # There should be a step that utilizes aws-actions/amazon-ecr-login action
       # for logging into ECR. (using 3rd party actions)
@@ -179,15 +179,3 @@ jobs:
       #     Apply the Kubernetes manfiests using the image tag from build
       - name: Run Test
         run: npm run test
-# 1b511abead59c6ce207077c0bf0e0043b1382612
-# client = boto3.client('iam')
-
-# response = client.create_open_id_connect_provider(
-#   ClientIDList=[
-#       'sts.amazonaws.com',
-#   ],
-#   ThumbprintList=[
-#       '1b511abead59c6ce207077c0bf0e0043b1382612',
-#   ],
-#   Url='https://token.actions.githubusercontent.com',
-# )
