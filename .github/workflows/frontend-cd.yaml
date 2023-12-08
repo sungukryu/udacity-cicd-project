@@ -17,9 +17,9 @@ on:
 env:
   NODE_VERSION: "18.14"
   REACT_APP_MOVIE_API_URL: http://localhost:5000
-  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  AWS_SESSION_TOKEN: ${{secrets.AWS_SESSION_TOKEN}}
+  AWS_ACCESS_KEY_ID: "ASIAUYKJAQQYS4ZB3Z6L"
+  AWS_SECRET_ACCESS_KEY: "1qPd4xcNGiHPIb0W5VAVQSSPQEbbwCIxlccg/suk"
+  AWS_SESSION_TOKEN: "FwoGZXIvYXdzEGkaDJHIL8DTggIJLnZFriK7AX34w338NLlgeM1CserORuYqAw1c8RR9B0q9Yz3tczZ1f2H6U1Hgw0V8qSKnFy15jnrkm3Wfb7xwek9PhJggSRoLvrkrRCad39OoDItdnSRbWL/QvFTvRfw3vpmZgm4uTYcC9mDq+hEjtcyKL0040dmroIWI7t9c8cm6jrQL0/qLfGDDqCBJu2trD+ekp0OXyXn3KenZaZYaoWBYP2aHDw5hL1ToNlmEHSbB+0e7BJsGzGfWfxg8t+mBKaUo+eTMqwYyLRnjrO1/DwpeV0PpfkpQZsv9HlbzTdIDlseUUnw21nYFt729WwCw3mX8LRn8sg=="
   AWS_REGION: us-east-1
   ECR_REPOSITORY: frontend
 
@@ -103,28 +103,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up environment variables
-        run: |
-          echo "AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID" >> .env
-          echo "AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY" >> .env
-          echo "AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN" >> .env
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: us-east-1
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-session-token: ${{secrets.AWS_SESSION_TOKEN}}
+          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{env.AWS_SESSION_TOKEN}}
 
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
         env:
           AWS_REGION: us-east-1
-          AWS_ACCESS_KEY_ID: "ASIAUYKJAQQYS4ZB3Z6L"
-          AWS_SECRET_ACCESS_KEY: "1qPd4xcNGiHPIb0W5VAVQSSPQEbbwCIxlccg/suk"
-          AWS_SESSION_TOKEN: "FwoGZXIvYXdzEGkaDJHIL8DTggIJLnZFriK7AX34w338NLlgeM1CserORuYqAw1c8RR9B0q9Yz3tczZ1f2H6U1Hgw0V8qSKnFy15jnrkm3Wfb7xwek9PhJggSRoLvrkrRCad39OoDItdnSRbWL/QvFTvRfw3vpmZgm4uTYcC9mDq+hEjtcyKL0040dmroIWI7t9c8cm6jrQL0/qLfGDDqCBJu2trD+ekp0OXyXn3KenZaZYaoWBYP2aHDw5hL1ToNlmEHSbB+0e7BJsGzGfWfxg8t+mBKaUo+eTMqwYyLRnjrO1/DwpeV0PpfkpQZsv9HlbzTdIDlseUUnw21nYFt729WwCw3mX8LRn8sg=="
+          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{env.AWS_SESSION_TOKEN}}
       - name: Setup NodeJS
         uses: actions/setup-node@v4
         with:
