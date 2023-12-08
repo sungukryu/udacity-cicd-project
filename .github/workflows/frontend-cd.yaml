@@ -175,8 +175,8 @@ jobs:
           REPOSITORY: my-ecr-repo
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build --build-arg=${{ env.REACT_APP_MOVIE_API_URL }} --tag=mp-frontend:latest .
-          docker push 327107511345.dkr.ecr.us-east-1.amazonaws.com/frontend/mp-frontend:latest
+          docker build --build-arg=${{ env.REACT_APP_MOVIE_API_URL }} --tag=frontend:latest .
+          docker push 327107511345.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
 
       - name: Setup NodeJS
         uses: actions/setup-node@v4
