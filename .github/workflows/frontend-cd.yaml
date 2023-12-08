@@ -95,7 +95,7 @@ jobs:
     name: Build Job
     runs-on: ubuntu-latest
     environment:
-      name: aws
+      name: "AWS"
     defaults:
       run:
         working-directory: "starter/frontend"
