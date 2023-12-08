@@ -17,6 +17,11 @@ on:
 env:
   NODE_VERSION: "18.14"
   REACT_APP_MOVIE_API_URL: http://localhost:5000
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_SESSION_TOKEN: ${{secrets.AWS_SESSION_TOKEN}}
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: frontend
 
 permissions:
   id-token: write
@@ -102,9 +107,9 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: us-east-1
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{env.AWS_SESSION_TOKEN}}
 
       - name: Login to Amazon ECR
         id: login-ecr
