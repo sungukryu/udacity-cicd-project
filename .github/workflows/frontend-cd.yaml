@@ -103,11 +103,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         run: |
-          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
-          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
-          echo "AWS_SESSION_TOKEN=${{secrets.AWS_SESSION_TOKEN}}" >> $GITHUB_ENV
-          echo "AWS_REGION=us-east-1" >> $GITHUB_ENV
-          echo "ECR_REPOSITORY=frontend" >> $GITHUB_ENV
+          echo "AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID" >> .env
+          echo "AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY" >> .env
+          echo "AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN" >> .env
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
