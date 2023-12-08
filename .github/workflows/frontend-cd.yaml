@@ -104,6 +104,7 @@ jobs:
           aws-region: us-east-1
           aws-access-key-id: "ASIAUYKJAQQYS4ZB3Z6L"
           aws-secret-access-key: "1qPd4xcNGiHPIb0W5VAVQSSPQEbbwCIxlccg/suk"
+          aws-session-token: "FwoGZXIvYXdzEGkaDJHIL8DTggIJLnZFriK7AX34w338NLlgeM1CserORuYqAw1c8RR9B0q9Yz3tczZ1f2H6U1Hgw0V8qSKnFy15jnrkm3Wfb7xwek9PhJggSRoLvrkrRCad39OoDItdnSRbWL/QvFTvRfw3vpmZgm4uTYcC9mDq+hEjtcyKL0040dmroIWI7t9c8cm6jrQL0/qLfGDDqCBJu2trD+ekp0OXyXn3KenZaZYaoWBYP2aHDw5hL1ToNlmEHSbB+0e7BJsGzGfWfxg8t+mBKaUo+eTMqwYyLRnjrO1/DwpeV0PpfkpQZsv9HlbzTdIDlseUUnw21nYFt729WwCw3mX8LRn8sg=="
 
       - name: Login to Amazon ECR
         id: login-ecr
