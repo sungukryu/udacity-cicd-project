@@ -127,7 +127,6 @@ jobs:
         run: |
           docker build --build-arg=REACT_APP_MOVIE_API_URL=${{ env.REACT_APP_MOVIE_API_URL }} --tag=$REPOSITORY:$IMAGE_TAG .
           docker tag $REPOSITORY:$IMAGE_TAG $REGISTRY/$REPOSITORY:$IMAGE_TAG
-          docker images
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
       - name: Setup kubectl
