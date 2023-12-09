@@ -14,24 +14,15 @@ env:
   REACT_APP_MOVIE_API_URL: http://localhost:5000
   WORKING_DIRECTORY: "starter/backend"
 
-# A Continuous Deployment workflow that:
 #     The built docker image should be tagged with the git sha
 #     Runs a deploy job that applies the Kubernetes manifests to the provided cluster.
 #     The manifest should deploy the newly created tagged image
-#     ⚠️ NOTE Once you begin work on Continuous Deployment,
-#       you'll need to first setup the AWS and Kubernetes environment.
-#       Follow the next set of instructions when you're ready to start testing your deployments.
-
 #     Accomplishes the following tasks:
-#     Run after tests succeed
 #     Tag the built docker image with the git sha (use GitHub Context)
 #     If deploying to a Kubernetes cluster:
 #     Push the image to ECR
 #     Apply the Kubernetes manfiests using the image tag from build
 
-# There should be a step that utilizes aws-actions/amazon-ecr-login action for logging into ECR.
-# (using 3rd party actions)
-# The ECR login step should also be accessing Github Secrets for credentials. (secure approach)
 # There should be a step that pushes the docker image to ECR in the AWS account.
 # There should be a step that deploys the application using kubectl to the kubernetes cluster
 # The pipeline should be executed automatically on merges to the main branch
@@ -50,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ${{ env.WORKING_DIRECTORY }}
+        working-directory: "starter/backend"
 
     steps:
       - name: Checkout code
@@ -71,9 +62,7 @@ jobs:
 
       - name: Install Dependencies
         if: steps.cache.outputs['cache-hit'] != 'true'
-        run: |
-          pip install pipenv
-          pipenv install flakes8
+        run: pip install pipenv && pipenv install flake8
 
       - name: Run Lint
         run: pipenv run lint
@@ -83,8 +72,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ${{ env.WORKING_DIRECTORY }}
-
+        working-directory: "starter/backend"
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -104,9 +92,7 @@ jobs:
 
       - name: Install Dependencies
         if: steps.cache.outputs['cache-hit'] != 'true'
-        run: |
-          pip install pipenv
-          pipenv install
+        run: pip install pipenv && pipenv install
 
       - name: Run Test
         run: pipenv run test
