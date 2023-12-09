@@ -84,10 +84,14 @@ jobs:
 
   # This step should also utilize build-args to ensure the application is built
   # with an environment variable REACT_APP_MOVIE_API_URL
+  # Build
+  # Tag the built docker image with the git sha (use GitHub Context)
+  # If deploying to a Kubernetes cluster:
+  # Push the image to ECR
+  # Apply the Kubernetes manfiests using the image tag from build
+
   # There should be a step that pushes the docker image to ECR in the AWS account.
   # There should be a step that deploys the application using kubectl to the eks cluster
-  # The pipeline should be running without errors with all tests passing
-  # and no output failures from any of the steps
 
   build:
     name: Build Job
@@ -131,7 +135,11 @@ jobs:
         run: npm ci
 
       - name: Build Application
-        run: docker build --build-arg=REACT_APP_MOVIE_API_URL=http://localhost:5000 --tag=mp-frontend:latest . # && docker run --name mp-frontend -p 3000:3000 -d mp-frontend]
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: ${{ env.ECR_REPOSITORY }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: docker build --build-arg=REACT_APP_MOVIE_API_URL=${{ env.REACT_APP_MOVIE_API_URL }} --tag=$REPOSITORY:$IMAGE_TAG .
 
   deploy:
     name: Deploy Job
@@ -163,7 +171,6 @@ jobs:
         run: |
           docker build --build-arg=REACT_APP_MOVIE_API_URL=${{ env.REACT_APP_MOVIE_API_URL }} --tag=$REPOSITORY:$IMAGE_TAG .
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
-        # docker push ${{ env.REGISTRY }}/frontend:latest
 
       - name: Setup NodeJS
         uses: actions/setup-node@v4
