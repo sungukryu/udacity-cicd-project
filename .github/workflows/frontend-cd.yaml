@@ -56,7 +56,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ${{ env.WORKING_DIR }}
+        working-directory: "${{ env.WORKING_DIR }}"
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -87,7 +87,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ${{ env.WORKING_DIR }}
+        working-directory: "starter/setup/k8s"
     needs: [lint, test]
 
     steps:
@@ -115,9 +115,15 @@ jobs:
           docker tag $REPOSITORY:$IMAGE_TAG $REGISTRY/$REPOSITORY:$IMAGE_TAG
           docker images
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
-      # Apply the Kubernetes manfiests using the image tag from build
-      # There should be a step that pushes the docker image to ECR in the AWS account.
-      # There should be a step that deploys the application using kubectl to the eks cluster
 
       - name: Setup kubectl
         run: aws eks update-kubeconfig --name cluster --region ${{ env.AWS_REGION }}
+
+      - name: Deploy the application using kubectl
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: ${{ env.ECR_REPOSITORY }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          kustomize edit set image frontend=$REGISTRY/$REPOSITORY:$IMAGE_TAG
+          kustomize build | kubectl apply -f -
