@@ -28,15 +28,7 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: "pipenv"
 
-      - name: Restore Cache
-        uses: actions/cache/restore@v3
-        id: cache
-        with:
-          path: starter/backend
-          key: ${{ runner.os }}-${{ hashFiles('**/Pipfile.lock') }}
-
       - name: Install Dependencies
-        if: steps.cache.outputs['cache-hit'] != 'true'
         run: pip install pipenv && pipenv install flakes8
 
       - name: Run Lint
