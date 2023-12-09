@@ -137,12 +137,12 @@ jobs:
       - name: Build Application
         run: docker build --tag mp-backend:latest . # && docker run -p 5000:5000 --name mp-backend -d mp-backend
 
-  deploy:
-    name: Deploy Job
+  build_and_deploy:
+    name: Build and Deploy Job
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./starter/backend
+        working-directory: "starter/backend"
     needs: [lint, test]
 
     steps:
@@ -150,27 +150,15 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4 # More information on this action can be found below in the 'AWS Credentials' section
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::432255178055:role/my-github-actions-role
-          aws-region: us-east-1
+          aws-region: ${{ env.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: "pipenv"
-
-      - name: Restore Cache
-        uses: actions/cache/restore@v3
-        id: cache
-        with:
-          path: starter/backend
-          key: ${{ runner.os }}-${{ hashFiles('**/Pipfile.lock') }}
-
-      - name: Install Dependencies
-        if: steps.cache.outputs['cache-hit'] != 'true'
-        run: pip install pipenv && pipenv install
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build Application
         run: docker build --build-arg=REACT_APP_MOVIE_API_URL=http://localhost:5000 --tag=mp-frontend:latest . # && docker run --name mp-frontend -p 3000:3000 -d mp-frontend]
