@@ -39,8 +39,8 @@ jobs:
         if: steps.cache.outputs['cache-hit'] != 'true'
         run: |
           pip install pipenv
-          pipenv install
-        # pipenv install flakes8
+          pipenv lock --pre
+          pipenv install flakes8
 
       - name: Run Lint
         run: pipenv run lint
