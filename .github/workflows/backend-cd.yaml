@@ -14,35 +14,13 @@ env:
   REACT_APP_MOVIE_API_URL: http://localhost:5000
   WORKING_DIRECTORY: "starter/backend"
 
-#     The built docker image should be tagged with the git sha
-#     Runs a deploy job that applies the Kubernetes manifests to the provided cluster.
-#     The manifest should deploy the newly created tagged image
-#     Accomplishes the following tasks:
-#     Tag the built docker image with the git sha (use GitHub Context)
-#     If deploying to a Kubernetes cluster:
-#     Push the image to ECR
-#     Apply the Kubernetes manfiests using the image tag from build
-
-# There should be a step that pushes the docker image to ECR in the AWS account.
-# There should be a step that deploys the application using kubectl to the kubernetes cluster
-# The pipeline should be executed automatically on merges to the main branch
-# The pipeline should be able to be run manually for verification purposes
-# The pipeline should be running without errors with all tests passing
-# and no output failures from any of the steps
-# If there are AWS credentials anywhere in any of the pipelines = FAIL
-# If any of the pipelines are failing to run or have failed steps = FAIL
-# If any of the pipelines pass when there's a test failure = FAIL
-# (will provide steps on how to simulate test failure)
-# If the docker image doesn't get uploaded to ECR = FAIL
-# If the application isn't successfully running on the cluster = FAIL
 jobs:
   lint:
     name: Lint Job
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: "starter/backend"
-
+        working-directory: ${{ env.WORKING_DIRECTORY }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -72,7 +50,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: "starter/backend"
+        working-directory: ${{ env.WORKING_DIRECTORY }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
