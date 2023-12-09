@@ -12,6 +12,6 @@ export userarn="arn:aws:iam::327107511345:user/github-action-user"
 echo "Updating permissions"
 aws-iam-authenticator add user --userarn="${userarn}" --username=github-action-role --groups=system:masters --kubeconfig="$HOME"/.kube/config --prompt=false
 
-echo "Cleaning up"
-rm aws-iam-authenticator
+# echo "Cleaning up"
+# rm aws-iam-authenticator
 echo "Done!"

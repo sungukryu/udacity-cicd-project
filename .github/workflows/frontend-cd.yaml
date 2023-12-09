@@ -143,23 +143,23 @@ jobs:
           docker build --build-arg=REACT_APP_MOVIE_API_URL=${{ env.REACT_APP_MOVIE_API_URL }} --tag=$REPOSITORY:$IMAGE_TAG .
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
-      - name: Setup NodeJS
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
+      # - name: Setup NodeJS
+      #   uses: actions/setup-node@v4
+      #   with:
+      #     node-version: ${{ env.NODE_VERSION }}
 
-      - name: Restore Cache
-        uses: actions/cache@v3
-        id: cache
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+      # - name: Restore Cache
+      #   uses: actions/cache@v3
+      #   id: cache
+      #   with:
+      #     path: "**/node_modules"
+      #     key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-node-
 
-      - name: Install Dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: npm ci
+      # - name: Install Dependencies
+      # if: steps.cache.outputs.cache-hit != 'true'
+      # run: npm ci
   # If deploying to a Kubernetes cluster:
   # Push the image to ECR
   # Apply the Kubernetes manfiests using the image tag from build
