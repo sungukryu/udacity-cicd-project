@@ -12,6 +12,7 @@ env:
   ECR_REPOSITORY: backend
   PYTHON_VERSION: "3.10"
   REACT_APP_MOVIE_API_URL: http://localhost:5000
+  WORKING_DIRECTORY: "starter/backend"
 
 # A Continuous Deployment workflow that:
 #     The built docker image should be tagged with the git sha
@@ -49,7 +50,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: "starter/backend"
+        working-directory: ${{ env.WORKING_DIRECTORY }}
 
     steps:
       - name: Checkout code
@@ -80,7 +81,8 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: "starter/backend"
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -105,46 +107,13 @@ jobs:
       - name: Run Test
         run: pipenv run test
 
-  build:
-    name: Build Job
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: "starter/backend"
-    needs: [lint, test]
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: "pipenv"
-
-      - name: Restore Cache
-        uses: actions/cache/restore@v3
-        id: cache
-        with:
-          path: starter/backend
-          key: ${{ runner.os }}-${{ hashFiles('**/Pipfile.lock') }}
-
-      - name: Install Dependencies
-        if: steps.cache.outputs['cache-hit'] != 'true'
-        run: pip install pipenv && pipenv install
-
-      - name: Build Application
-        run: docker build --tag mp-backend:latest . # && docker run -p 5000:5000 --name mp-backend -d mp-backend
-
   build_and_deploy:
     name: Build and Deploy Job
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: "starter/backend"
+        working-directory: ${{ env.WORKING_DIRECTORY }}
     needs: [lint, test]
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
