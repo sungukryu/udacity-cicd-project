@@ -40,7 +40,7 @@ jobs:
         run: |
           pip install pipenv
           pipenv install
-          pipenv install flakes8
+        # pipenv install flakes8
 
       - name: Run Lint
         run: pipenv run lint
@@ -70,7 +70,9 @@ jobs:
 
       - name: Install Dependencies
         if: steps.cache.outputs['cache-hit'] != 'true'
-        run: pip install pipenv && pipenv install
+        run: |
+          pip install pipenv
+          pipenv install
 
       - name: Run Test
         run: pipenv run test
