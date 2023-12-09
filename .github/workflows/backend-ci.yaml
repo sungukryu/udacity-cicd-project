@@ -28,8 +28,16 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: "pipenv"
 
+      - name: Restore Cache
+        uses: actions/cache/restore@v3
+        id: cache
+        with:
+          path: starter/backend
+          key: ${{ runner.os }}-${{ hashFiles('**/Pipfile.lock') }}
+
       - name: Install Dependencies
-        run: pip install pipenv && pipenv install flakes8
+        if: steps.cache.outputs['cache-hit'] != 'true'
+        run: pip install pipenv && pipenv install flake8
 
       - name: Run Lint
         run: pipenv run lint
@@ -59,9 +67,7 @@ jobs:
 
       - name: Install Dependencies
         if: steps.cache.outputs['cache-hit'] != 'true'
-        run: |
-          pip install pipenv
-          pipenv install
+        run: pip install pipenv && pipenv install
 
       - name: Run Test
         run: pipenv run test
@@ -78,5 +84,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: "pipenv"
+
+      - name: Restore Cache
+        uses: actions/cache/restore@v3
+        id: cache
+        with:
+          path: starter/backend
+          key: ${{ runner.os }}-${{ hashFiles('**/Pipfile.lock') }}
+
+      - name: Install Dependencies
+        if: steps.cache.outputs['cache-hit'] != 'true'
+        run: pip install pipenv && pipenv install
+
       - name: Build Application
-        run: docker build --tag mp-backend:latest .
+        run: docker build --tag mp-backend:latest . # && docker run -p 5000:5000 --name mp-backend -d mp-backend
