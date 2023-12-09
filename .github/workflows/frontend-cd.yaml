@@ -12,7 +12,6 @@ env:
   ECR_REPOSITORY: frontend
   NODE_VERSION: "18.14"
   REACT_APP_MOVIE_API_URL: http://localhost:5000
-  WORKING_DIR: "starter/frontend"
 
 permissions:
   id-token: write
@@ -24,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ${{ env.WORKING_DIR }}
+        working-directory: "starter/frontend"
 
     steps:
       - name: Checkout code
@@ -56,7 +55,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: "${{ env.WORKING_DIR }}"
+        working-directory: ""starter/frontend""
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -87,7 +86,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: "starter/setup/k8s"
+        working-directory: "setup/k8s"
     needs: [lint, test]
 
     steps:
