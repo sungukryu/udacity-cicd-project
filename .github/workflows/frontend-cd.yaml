@@ -86,7 +86,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: "starter/frontend/k8s"
+        working-directory: "starter/frontend"
     needs: [lint, test]
 
     steps:
@@ -109,7 +109,6 @@ jobs:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REPOSITORY: ${{ env.ECR_REPOSITORY }}
           IMAGE_TAG: ${{ github.sha }}
-        working-directory: "starter/frontend"
         run: |
           docker build --build-arg=REACT_APP_MOVIE_API_URL=${{ env.REACT_APP_MOVIE_API_URL }} --tag=$REPOSITORY:$IMAGE_TAG .
           docker tag $REPOSITORY:$IMAGE_TAG $REGISTRY/$REPOSITORY:$IMAGE_TAG
@@ -124,7 +123,7 @@ jobs:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REPOSITORY: ${{ env.ECR_REPOSITORY }}
           IMAGE_TAG: ${{ github.sha }}
-        working-directory: "starter/frontend/k8s"
+        working-directory: "k8s"
         run: |
           kustomize edit set image frontend=$REGISTRY/$REPOSITORY:$IMAGE_TAG
           kustomize build | kubectl apply -f -
