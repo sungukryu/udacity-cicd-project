@@ -37,10 +37,7 @@ jobs:
 
       - name: Install Dependencies
         if: steps.cache.outputs['cache-hit'] != 'true'
-        run: |
-          pip install pipenv
-          pipenv lock --pre
-          pipenv install flakes8
+        run: pip install pipenv && pipenv install flakes8
 
       - name: Run Lint
         run: pipenv run lint
