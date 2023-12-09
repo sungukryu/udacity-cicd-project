@@ -110,7 +110,7 @@ jobs:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REPOSITORY: ${{ env.ECR_REPOSITORY }}
           IMAGE_TAG: ${{ github.sha }}
-        run: docker build --build-arg=REACT_APP_MOVIE_API_URL=${{ env.REACT_APP_MOVIE_API_URL }} --tag=$REPOSITORY:$IMAGE_TAG .
+        run: docker build --build-arg=REACT_APP_MOVIE_API_URL=${{ env.REACT_APP_MOVIE_API_URL }} --tag=$REPOSITORY:$IMAGE_TAG . && docker images
 
   deploy:
     name: Deploy Job
@@ -141,6 +141,7 @@ jobs:
           IMAGE_TAG: ${{ github.sha }}
         run: |
           docker build --build-arg=REACT_APP_MOVIE_API_URL=${{ env.REACT_APP_MOVIE_API_URL }} --tag=$REPOSITORY:$IMAGE_TAG .
+          docker images
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
       # - name: Setup NodeJS
