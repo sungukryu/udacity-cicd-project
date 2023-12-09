@@ -115,7 +115,9 @@ jobs:
           docker tag $REPOSITORY:$IMAGE_TAG $REGISTRY/$REPOSITORY:$IMAGE_TAG
           docker images
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
-  # If deploying to a Kubernetes cluster:
-  # Apply the Kubernetes manfiests using the image tag from build
-  # There should be a step that pushes the docker image to ECR in the AWS account.
-  # There should be a step that deploys the application using kubectl to the eks cluster
+      # Apply the Kubernetes manfiests using the image tag from build
+      # There should be a step that pushes the docker image to ECR in the AWS account.
+      # There should be a step that deploys the application using kubectl to the eks cluster
+
+      - name: Setup kubectl
+        run: aws eks update-kubeconfig --name cluster --region ${{ env.AWS_REGION }}
